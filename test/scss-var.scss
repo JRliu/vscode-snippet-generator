@@ -1,0 +1,7 @@
+$color-black: #121212; // 黑色
+
+$color-haha: $color-black;
+
+.test {
+  color: $color-haha;
+}
