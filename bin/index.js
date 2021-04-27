@@ -10,29 +10,29 @@ const lib = require('../dist/index.js')
 program
     .version(version)
     .option('-s, --source <source>', 'var source path')
-    .option('-d, --dist <dist>', 'snippet dist path')
+    .option('-n, --name <name>', 'output file name')
     .option('-t, --type <type>', 'var type')
     .action((opt) => {
-        let s = opt.source
-
-        let d = opt.dist ? path.join(process.cwd(), opt.dist) : path.join(process.cwd(), ".vscode/scss-var.code-snippets")
+        let source = opt.source
+        let name = opt.name || 'css'
+        let dist = path.join(process.cwd(), `.vscode/${name}.code-snippets`)
 
         let t = opt.type || 'sass'
 
-        if (s) {
-            s = path.join(process.cwd(), s)
+        if (source) {
+            source = path.join(process.cwd(), source)
         } else {
             console.log(chalk.red('请传入变量文件地址'))
             return
         }
 
-        if (!fs.existsSync(s)) {
-            console.log(chalk.red('错误的变量文件地址：' + s))
+        if (!fs.existsSync(source)) {
+            console.log(chalk.red('错误的变量文件地址：' + source))
             return
         }
 
 
-        lib.gen(s, d, t)
+        lib.gen(source, dist, t)
     })
 
 program.parse()

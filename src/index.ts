@@ -7,8 +7,12 @@ interface VarObj {
 
 type Type = "sass" | "css" | "scss";
 
+function getIsSass(type: Type) {
+  return ["sass", "scss"].includes(type);
+}
+
 function getVarObjs(path: string, type: Type) {
-  const isSass = type === "sass";
+  const isSass = getIsSass(type);
   const varReg = isSass ? /(\$[\w|-]+):\s(.+)/g : /(--[\w|-]+):\s(.+)/g;
   let content = fs.readFileSync(path, "utf8");
 
@@ -32,7 +36,7 @@ const Scope = "sass, scss, css";
 function getSnippets(params: { vars: VarObj[]; type: Type }) {
   const { vars, type } = params;
   const snippets = {} as { [k: string]: any };
-  const isSass = ["sass", "scss"].includes(type);
+  const isSass = getIsSass(type);
 
   vars.forEach((v) => {
     var body = isSass ? "\\" + v.name + ";" : "var(" + v.name + ")";

@@ -4,18 +4,21 @@
 
 # 安装
 
+```
+yarn add vscode-css-snippet-generator -D
+```
+
 # 使用
 
-Options:
--V, --version output the version number
--s, --source <source> var source path
--d, --dist <dist> snippet dist path
--t, --type <type> var type
--h, --help display help for command
-
-栗子：
-
 ```
-gen-vscode-snippet -s ./style/var.scss -t scss
+Options:
+  -V, --version          output the version number
+  -s, --source <source>  var source path
+  -n, --name <name>      output file name
+  -t, --type <type>      var type
+  -h, --help             display help for command
+
+// example
+gen-vscode-css-snippet -s ./style/var.scss -n scss-var -t scss
 
 ```

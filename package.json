@@ -21,7 +21,7 @@
     "README.md"
   ],
   "bin": {
-    "gen-vscode-snippet": "./bin/index.js"
+    "gen-vscode-css-snippet": "./bin/index.js"
   },
   "license": "MIT",
   "scripts": {
