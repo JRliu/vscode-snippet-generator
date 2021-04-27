@@ -2,6 +2,10 @@
 
 支持 sass/css 变量和 sass mixin 的 snippet 生成。
 
+# 原理
+
+使用正则匹配出对应文件内的变量/mixin，在项目根目录的`.vscode`文件夹内生成对应的`snippet`配置文件。
+
 # 安装
 
 ```
@@ -19,7 +23,7 @@ Options:
   -h, --help             display help for command
 
 // example
-gen-vscode-css-snippet -s ./style/var.scss -n scss-var -t scss-var
+npx gen-vscode-css-snippet -s ./style/var.scss -n scss-var -t scss-var
 
-gen-vscode-css-snippet -s ./style/mixin.scss -n scss-mixin -t scss-mixin
+npx gen-vscode-css-snippet -s ./style/mixin.scss -n scss-mixin -t scss-mixin
 ```
