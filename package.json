@@ -1,6 +1,10 @@
 {
-  "name": "snippet",
-  "version": "1.0.0",
+  "name": "vscode-snippet-generator",
+  "version": "0.0.1",
+  "author": {
+    "name": "JRLiu",
+    "email": "liujianrong1992@gmail.com"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "exports": {
@@ -16,10 +20,17 @@
     "package.json",
     "README.md"
   ],
+  "bin": {
+    "gen-vscode-snippet": "./bin/index.js"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "ts-node ./src/index.ts -p ./tsconfig.json",
     "build": "rm -rf ./dist && rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JRliu/vscode-snippet-generator.git"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
