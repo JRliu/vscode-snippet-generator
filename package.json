@@ -1,5 +1,5 @@
 {
-  "name": "vscode-snippet-generator",
+  "name": "vscode-css-snippet-generator",
   "version": "0.0.1",
   "author": {
     "name": "JRLiu",
@@ -26,7 +26,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node ./src/index.ts -p ./tsconfig.json",
-    "build": "rm -rf ./dist && rollup -c"
+    "build": "rm -rf ./dist && rollup -c",
+    "prepack": "yarn build"
   },
   "repository": {
     "type": "git",
