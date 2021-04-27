@@ -1,0 +1,124 @@
+@mixin ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin multi-ellipsis($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: $lines;
+
+  // stylelint-disable
+  /*! autoprefixer: off */
+  box-orient: vertical;
+  // stylelint-enable
+}
+
+@mixin scale-hairline-common($color, $top, $right, $bottom, $left) {
+  display: block;
+  position: absolute;
+  left: $left;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  background-color: $color;
+  content: "";
+  opacity: 0.5;
+}
+
+@mixin dpr-hairline-scale($direction: "", $scale: 0.5) {
+  @if $direction == "bottom" {
+    transform: scaleY($scale);
+  } @else if $direction == "top" {
+    transform: scaleY($scale);
+  } @else if $direction != "all" {
+    transform: scaleX($scale);
+  }
+
+  opacity: 1;
+}
+
+@mixin hairline($direction: null, $radius: 0, $color: $color-line) {
+  // 6,7,8
+  @media only screen and (device-height: 667px) and (-webkit-min-device-pixel-ratio: 2),
+    // 5 only screen and (device-height: 568px) and (-webkit-min-device-pixel-ratio: 2),
+    // XR only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+    @include dpr-hairline-scale($direction, 0.5);
+  }
+
+  // X
+  @media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+    // 6plus,
+    7plus only screen and (device-height: 736px) and (-webkit-min-device-pixel-ratio: 3),
+    // XS MAX only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
+    @include dpr-hairline-scale($direction, 0.33);
+  }
+
+  @if $direction == "top" {
+    @include scale-hairline-common($color, 0, auto, auto, 0);
+
+    width: 100%;
+    height: 1px;
+    transform-origin: 50% 0%;
+  }
+
+  @if $direction == "right" {
+    @include scale-hairline-common($color, 0, 0, auto, auto);
+
+    width: 1px;
+    height: 100%;
+    transform-origin: 100% 50%;
+  }
+
+  @if $direction == "bottom" {
+    @include scale-hairline-common($color, auto, auto, 0, 0);
+
+    width: 100%;
+    height: 1px;
+    transform-origin: 50% 100%;
+  }
+
+  @if $direction == "left" {
+    @include scale-hairline-common($color, 0, auto, auto, 0);
+
+    width: 1px;
+    height: 100%;
+    transform-origin: 0% 50%;
+  }
+
+  @if $direction == "all" {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200%;
+    height: 200%;
+    border: 1px solid $color;
+    border-radius: $radius * 2;
+    transform-origin: 0 0;
+    transform: scale(0.5);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+}
+
+@mixin safe-area-padding-bottom($pd: 0rpx) {
+  padding-bottom: $pd !important;
+  padding-bottom: calc(#{$pd} + constant(safe-area-inset-bottom)) !important;
+  padding-bottom: calc(#{$pd} + env(safe-area-inset-bottom)) !important;
+}
+
+@mixin safe-area-inset($prop, $value: 0rpx, $pos: bottom) {
+  #{$prop}: $value;
+  #{$prop}: calc(#{$value} + constant(safe-area-inset-#{$pos}));
+  #{$prop}: calc(#{$value} + env(safe-area-inset-#{$pos}));
+}
+
+@mixin flex-base($justify: center, $align: center, $direction: row) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+  flex-direction: $direction;
+}

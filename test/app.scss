@@ -1,4 +1,6 @@
 .app {
   color: $color-black;
   background-color: var(--fuck-you-color);
+
+  @include hairline(direction, color);
 }

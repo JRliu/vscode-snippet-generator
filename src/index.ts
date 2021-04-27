@@ -1,53 +1,86 @@
 import fs from "fs-extra";
+import chalk from "chalk";
 
-interface VarObj {
+interface DataItem {
   name: string;
   desc: string;
+  body: string;
+  prefix?: string;
 }
 
-type Type = "sass" | "css" | "scss";
-
-function getIsSass(type: Type) {
-  return ["sass", "scss"].includes(type);
+enum Type {
+  SassVar = "sass-var",
+  ScssVar = "scss-var",
+  CssVar = "css-var",
+  SassMixin = "sass-mixin",
+  ScssMixin = "scss-mixin",
 }
 
-function getVarObjs(path: string, type: Type) {
-  const isSass = getIsSass(type);
-  const varReg = isSass ? /(\$[\w|-]+):\s(.+)/g : /(--[\w|-]+):\s(.+)/g;
+const TypeVals = Object.values(Type);
+
+const Scope = "sass, scss, css";
+
+const hexReg = /(\#[0-9A-F]{6})|(^#[0-9A-F]{3})/gi;
+const scssVarReg = /(\$[\w|-]+):\s(.+)/g;
+const cssVarReg = /(--[\w|-]+):\s(.+)/g;
+const scssMixinReg = /(@mixin)[^}^\n]+{/g;
+
+function getIsSassVar(type: Type) {
+  return ["sass-var", "scss-var"].includes(type);
+}
+
+function getVarItems(path: string, type: Type): DataItem[] {
+  const isSass = getIsSassVar(type);
+  const varReg = isSass ? scssVarReg : cssVarReg;
   let content = fs.readFileSync(path, "utf8");
 
   const ovars = content.match(varReg) || [];
   const vars = ovars.map((v) => {
     let strs = v.split(":");
+    let name = strs[0];
     return {
-      name: strs[0],
+      name,
       desc: strs[1] ? strs[1] : "",
+      body: isSass ? "\\" + name + ";" : "var(" + name + ")",
     };
   });
 
-  return {
-    vars,
-    type,
-  };
+  return vars;
 }
 
-const Scope = "sass, scss, css";
+function getMixinItems(path: string): DataItem[] {
+  let content = fs.readFileSync(path, "utf8");
 
-function getSnippets(params: { vars: VarObj[]; type: Type }) {
-  const { vars, type } = params;
-  const snippets = {} as { [k: string]: any };
-  const isSass = getIsSass(type);
+  const omixins = content.match(scssMixinReg) || [];
+  return omixins.map((m) => {
+    const name = m.match(/@mixin\s([\w-]+)[\(]?/)![1];
+    let body = m.substr(0, m.length - 2);
+    body = body.replace("@mixin", "@include") + ";";
+    // 去掉参数的默认值
+    body = body.replace(/:[\w\W\d\$-\s]+,/, ",");
+    body = body.replace(/:[\w\W\d\$-\s]+\)/, ")");
 
-  vars.forEach((v) => {
-    var body = isSass ? "\\" + v.name + ";" : "var(" + v.name + ")";
-    snippets[v.name] = {
-      prefix: v.name,
+    return {
+      name,
+      prefix: `@include ${name}`,
+      desc: name,
       body,
-      description: v.desc,
+    };
+  });
+}
+
+function getSnippets(data: DataItem[]) {
+  const snippets = {} as { [k: string]: any };
+
+  data.forEach((v) => {
+    const { name, body, prefix, desc } = v;
+    snippets[v.name] = {
+      prefix: prefix ? prefix : name,
+      body,
+      description: desc,
       scope: Scope,
     };
 
-    let hexReg = /(\#[0-9A-F]{6})|(^#[0-9A-F]{3})/gi;
     let hexColor = (v.desc.match(hexReg) || [])[0];
     if (hexColor) {
       snippets[hexColor + v.name] = {
@@ -64,7 +97,16 @@ function getSnippets(params: { vars: VarObj[]; type: Type }) {
 }
 
 export function gen(sourcePath: string, distPath: string, type: Type) {
-  const content = getSnippets(getVarObjs(sourcePath, type));
+  if (!TypeVals.includes(type)) {
+    console.log(chalk.red("请输入正确的type"));
+    return;
+  }
+  let content = "";
+  if (type.includes("-var")) {
+    content = getSnippets(getVarItems(sourcePath, type));
+  } else {
+    content = getSnippets(getMixinItems(sourcePath));
+  }
 
   const d = distPath;
   fs.ensureFileSync(d);

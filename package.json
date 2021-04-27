@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node ./src/index.ts -p ./tsconfig.json",
+    "dev": "rollup -w -c",
     "build": "rm -rf ./dist && rollup -c",
     "prepack": "yarn build"
   },
