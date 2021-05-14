@@ -8,31 +8,30 @@ const chalk = require('chalk')
 const lib = require('../dist/index.js')
 
 program
-    .version(version)
-    .option('-s, --source <source>', 'var source path')
-    .option('-n, --name <name>', 'output file name')
-    .option('-t, --type <type>', 'var type')
-    .action((opt) => {
-        let source = opt.source
-        let name = opt.name || 'css'
-        let dist = path.join(process.cwd(), `.vscode/${name}.code-snippets`)
+  .version(version)
+  .option('-s, --source <source>', 'source file path')
+  .option('-n, --name <name>', 'output file name')
+  .option('-t, --type <type>', 'type, option: sass-var/css-var/less-var/sass-mixin')
+  .action((opt) => {
+    let source = opt.source
+    const name = opt.name || 'css'
+    const dist = path.join(process.cwd(), `.vscode/${name}.code-snippets`)
 
-        let t = opt.type || 'sass'
+    const t = opt.type || 'sass'
 
-        if (source) {
-            source = path.join(process.cwd(), source)
-        } else {
-            console.log(chalk.red('请传入变量文件地址'))
-            return
-        }
+    if (source) {
+      source = path.join(process.cwd(), source)
+    } else {
+      console.log(chalk.red('请传入变量文件地址'))
+      return
+    }
 
-        if (!fs.existsSync(source)) {
-            console.log(chalk.red('错误的变量文件地址：' + source))
-            return
-        }
+    if (!fs.existsSync(source)) {
+      console.log(chalk.red('错误的变量文件地址：' + source))
+      return
+    }
 
-
-        lib.gen(source, dist, t)
-    })
+    lib.gen(source, dist, t)
+  })
 
 program.parse()

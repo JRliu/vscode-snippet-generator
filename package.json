@@ -1,6 +1,6 @@
 {
   "name": "vscode-css-snippet-generator",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "author": {
     "name": "JRLiu",
     "email": "liujianrong1992@gmail.com"
@@ -27,7 +27,8 @@
   "scripts": {
     "dev": "rollup -w -c",
     "build": "rm -rf ./dist && rollup -c",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "test": "node ./bin/index.js  -s ./test/less-var.less -n less-var -t less-var && node ./bin/index.js  -s ./test/scss-var.scss -n scss-var -t scss-var && node ./bin/index.js  -s ./test/css-var.scss -n css-var -t css-var && node ./bin/index.js  -s ./test/scss-mixins.scss -n scss-mixin -t scss-mixin"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,13 @@
     "@types/fs-extra": "^9.0.11",
     "@types/node": "^14.14.41",
     "@types/sass": "^1.16.0",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
+    "eslint": "^7.26.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
     "rollup": "^2.45.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "typescript": "^4.2.4"

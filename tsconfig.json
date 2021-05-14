@@ -18,7 +18,8 @@
 		"strict": true,
 		"outDir": "./dist",
 		"allowSyntheticDefaultImports": true,
-        "declaration": true 
+        "declaration": true,
+        "lib": ["dom", "es2016"]
     },
     "include": [
         "./src/**/*.ts"
