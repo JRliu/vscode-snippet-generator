@@ -55,13 +55,16 @@ function getVarItems (path: string, type: Type): DataItem[] {
   const content = fs.readFileSync(path, 'utf8')
 
   const ovars = content.match(varReg) || []
+
   const vars = ovars.map((v) => {
     const strs = v.split(':')
     const name = strs[0]
+    const cssVarBody = 'var(' + name + ')'
+    const otherVarBody = (name.startsWith('$') ? '\\' : '') + name + ';'
     return {
       name,
       desc: strs[1] ? strs[1] : '',
-      body: isCssVar ? 'var(' + name + ')' : '\\' + name + ';'
+      body: isCssVar ? cssVarBody : otherVarBody
     }
   })
 
