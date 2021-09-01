@@ -5,6 +5,15 @@
     "name": "JRLiu",
     "email": "liujianrong1992@gmail.com"
   },
+  "keywords": [
+    "vscode",
+    "snippet",
+    "css",
+    "scss",
+    "less",
+    "generator",
+    "gen"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "exports": {
