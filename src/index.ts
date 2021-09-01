@@ -15,6 +15,7 @@ enum Type {
   CssVar = 'css-var',
   SassMixin = 'sass-mixin',
   ScssMixin = 'scss-mixin',
+  LessMixin = 'less-mixin',
 }
 
 const TypeVals = Object.values(Type)
@@ -27,24 +28,34 @@ const scssVarReg = /(\$[\w|-]+):\s?(.+)/g
 const lessVarReg = /(@[\w|-]+):\s?(.+);/g
 const cssVarReg = /(--[\w|-]+):\s?(.+)/g
 const scssMixinReg = /(@mixin)[^}^\n]+{/g
+const lessMixinReg = /(\.)[^}^\n]+{/g
 
-function getIsSassVar (type: Type) {
+function getIsScssVar (type: Type) {
   return ['sass-var', 'scss-var'].includes(type)
 }
 
 function getIsLessVar (type: Type) {
   return ['less-var'].includes(type)
 }
-function getCessVar (type: Type) {
+
+function getIsCssVar (type: Type) {
   return ['css-var'].includes(type)
 }
 
+// function getIsScssMixin (type: Type) {
+//   return ['sass-mixin', 'scss-mixin'].includes(type)
+// }
+
+function getIsLessMixin (type: Type) {
+  return ['less-mixin'].includes(type)
+}
+
 function getVarItems (path: string, type: Type): DataItem[] {
-  const isCssVar = getCessVar(type)
+  const isCssVar = getIsCssVar(type)
 
   let varReg = cssVarReg
   switch (true) {
-    case getIsSassVar(type):
+    case getIsScssVar(type):
       varReg = scssVarReg
       break
     case getIsLessVar(type):
@@ -71,23 +82,54 @@ function getVarItems (path: string, type: Type): DataItem[] {
   return vars
 }
 
-function getMixinItems (path: string): DataItem[] {
+function getMixinItems (path: string, type: Type): DataItem[] {
   const content = fs.readFileSync(path, 'utf8')
 
+  // less mixin
+  if (getIsLessMixin(type)) {
+    const omixins = content.match(lessMixinReg) || []
+
+    return omixins.map((m) => {
+      const name = m.match(/\.([\w-]+)[(]?/)![1]
+      let body = m.substr(0, m.length - 2)
+
+      // 去掉参数的默认值
+      body = body.replace(/:[\w\W]+,/, ',')
+      body = body.replace(/:[\w\W]+\)/, ')')
+
+      //  参数的@改为$
+      body = body.replace(/@([\w-\s]+),/g, (_, $1) => {
+        return `$${$1},`
+      })
+      body =
+        body.replace(/@([\w-\s]+)\)/g, (_, $1) => {
+          return `$${$1})`
+        }) + ';'
+
+      return {
+        name,
+        prefix: `.${name}`,
+        desc: name,
+        body
+      }
+    })
+  }
+
+  // scss mixin
   const omixins = content.match(scssMixinReg) || []
   return omixins.map((m) => {
     const name = m.match(/@mixin\s([\w-]+)[(]?/)![1]
     let body = m.substr(0, m.length - 2)
-    body = body.replace('@mixin', '@include') + ';'
+    body = body.replace('@mixin', '@include')
     // 去掉参数的默认值
-    body = body.replace(/:[\w\W\d$-\s]+,/, ',')
-    body = body.replace(/:[\w\W\d$-\s]+\)/, ')')
+    body = body.replace(/:[\w\W]+,/g, ',')
+    body = body.replace(/:[\w\W]+\)/, ')') + ';'
 
     return {
-      name,
       prefix: `@include ${name}`,
       desc: name,
-      body
+      body,
+      name
     }
   })
 }
@@ -128,7 +170,7 @@ export function gen (sourcePath: string, distPath: string, type: Type): void {
   if (type.includes('-var')) {
     content = getSnippets(getVarItems(sourcePath, type))
   } else {
-    content = getSnippets(getMixinItems(sourcePath))
+    content = getSnippets(getMixinItems(sourcePath, type))
   }
 
   const d = distPath

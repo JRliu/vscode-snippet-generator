@@ -1,0 +1,29 @@
+.ellipsis() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.multi-ellipsis(@lines: 2) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: @lines;
+
+  // stylelint-disable
+  /*! autoprefixer: off */
+  box-orient: vertical;
+  // stylelint-enable
+}
+
+.scale-hairline-common(@color, @top, @right, @bottom, @left) {
+  display: block;
+  position: absolute;
+  left: @left;
+  top: @top;
+  right: @right;
+  bottom: @bottom;
+  background-color: @color;
+  content: "";
+  opacity: 0.5;
+}

@@ -10,11 +10,13 @@ const lib = require('../dist/index.js')
 program
   .version(version)
   .option('-s, --source <source>', 'source file path')
-  .option('-n, --name <name>', 'output file name')
+  .option('-n, --name <name>', 'output file name, default: source file name')
   .option('-t, --type <type>', 'type, option: sass-var/css-var/less-var/sass-mixin')
   .action((opt) => {
     let source = opt.source
-    const name = opt.name || 'css'
+
+    // 默认取source文件的文件名
+    const name = opt.name || path.basename(source).split('.')[0]
     const dist = path.join(process.cwd(), `.vscode/${name}.code-snippets`)
 
     const t = opt.type || 'sass'

@@ -9,8 +9,10 @@
 
 ## 安装
 
-```
+```bash
 yarn add vscode-css-snippet-generator -D
+// or
+yarn global add vscode-css-snippet-generator
 ```
 
 ## 使用
@@ -21,7 +23,7 @@ yarn add vscode-css-snippet-generator -D
 Options:
   -V, --version          output the version number
   -s, --source <source>  var source path
-  -n, --name <name>      output file name
+  -n, --name <name>      output file name, default: source file name
   -t, --type <type>      type, option: sass-var/css-var/less-var/sass-mixin
   -h, --help             display help for command
 ```
@@ -31,5 +33,7 @@ example:
 ```bash
 npx gen-vscode-css-snippet -s ./style/var.scss -n scss-var -t scss-var
 
-npx gen-vscode-css-snippet -s ./style/mixin.scss -n scss-mixin -t scss-mixin
+// global
+gen-vscode-css-snippet -s ./style/mixin.scss -t scss-mixin
+
 ```
